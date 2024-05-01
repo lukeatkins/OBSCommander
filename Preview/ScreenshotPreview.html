@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screenshot Preview</title>
+<style>
+
+:root {
+	--image-width: 480px;
+	--image-height: 270px;
+	--image-padding: 100px;
+}
+
+html, body {
+	width: 100%;
+    height: 100%;
+	overflow: hidden;
+}
+body {
+	margin: 0px;
+}
+
+#frame {
+    position: absolute;
+    transition: transform 1s ease-in-out;
+    left: 100%;
+    top: 100%;
+    width: var(--image-width);
+    height: var(--image-height);
+    transform: rotate(90deg) translate(calc(0px - var(--image-width) - var(--image-padding)), calc(0px - var(--image-height) - var(--image-padding)));
+}
+img {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+    width: var(--image-width);
+    height: var(--image-height);
+}
+#photo-frame {
+    left: 0;
+    top: 0;
+    width: var(--image-width);
+    height: var(--image-height);
+}
+</style>
+
+
+<script>
+	const config = {
+		Preview_Duration: 2,
+	}
+
+	window.addEventListener("load", () => {
+		var frame = document.getElementById("frame");
+		const computedStyle = window.getComputedStyle(frame);
+		const imageWidth = (computedStyle.getPropertyValue('--image-width'));
+		const imageHeight = (computedStyle.getPropertyValue('--image-height'));
+		const imagePadding = (computedStyle.getPropertyValue('--image-padding'));
+		const start = `rotate(90deg) translate(calc(0px - ${imageWidth} - ${imagePadding}), calc(0px - ${imageHeight} - ${imagePadding}))`
+		
+		const states = {
+			Start: start,
+			Show: start.replace("rotate(90deg)", "rotate(0deg)"),
+			Hide: start.replace("rotate(90deg)", "rotate(-90deg)"),
+		}
+		frame.style.transform = states.Show;
+		setTimeout(() => frame.style.transform = states.Hide, config.Preview_Duration * 1000);
+	})
+</script>
+
+</head>
+<body>
+
+<div id="frame">
+	<img id="slider-image" src="Screenshot.jpg" alt="Slider Image">
+	<img id="photo-frame" src="Frame.png">
+</div>
+
+
+</body>
+</html>

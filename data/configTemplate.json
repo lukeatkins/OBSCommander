@@ -1,0 +1,37 @@
+{
+	"OBS": {
+		"Address": "ws://localhost:4455", 
+		"password": "OBS Websocket Password. Make sure you enable the websocket server."
+	},
+
+	"Twitch": {
+		"Bot_Username": "Twitch Bot Username",
+		"Bot_Token": "Get oauth token from here: https://twitchapps.com/tmi/",
+		"Channel": "Main Broadcast Channel"
+	},
+
+	"Discord": {
+		"Webhook": "Webhook for Screenshots"
+	},
+
+	"Screenshots": {
+		"Live_Scene": "Live",
+		"Preview_Source": "Screenshot Preview",
+		"Source_Names": [
+			"GFG RTMP Relay"
+		]
+	},
+	
+	"_Command_Shortcuts": "Command shortcuts use existing commands with overridden arguments",
+	"Command_Shortcuts": [
+		{
+			"Name": "Toggle Audio Filter",
+			"Base_Command": "ToggleFilter",
+			"Command": "audiofilter",
+			"Args": ["GFG RTMP Relay", "3-Band Equalizer"]
+		}
+	],
+
+	"_CommandDocs": "https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md#requests"
+	
+}
