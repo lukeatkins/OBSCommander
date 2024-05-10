@@ -30,6 +30,13 @@ class OBSCommander {
 				Aliases: [],
 				Permissions: [PermissionEnum.Mod],
 				Action: this.cmdToggleFilter.bind(this),
+			},
+			{
+				Name: "SetVolume",
+				Command: "setvolume",
+				Aliases: [],
+				Permissions: [PermissionEnum.Mod],
+				Action: this.cmdSetSourceVolume.bind(this),
 			}
 		];
 		this.config.Command_Shortcuts.forEach(cmd => {
@@ -139,7 +146,7 @@ class OBSCommander {
 		const [cmd, ...args] = this.getMessageArguments(message.substring(1));
 
 		// Handle the command
-		var command = this.commands.find(e => e.Command == cmd.toLowerCase() || e.Aliases.includes(cmd.toLowerCase()));
+		var command = this.commands.find(e => e.Command == cmd.toLowerCase() || e.Aliases?.includes(cmd.toLowerCase()));
 		if (command) {
 			var msg = {
 				Command: command,
@@ -224,7 +231,7 @@ class OBSCommander {
 		}).then(res => {
 			this.screenshotPreviewId = res.sceneItemId;
 		}).catch(err => {
-			console.log(err);
+			console.log("Screenshot Preview not enabled: ", err.message);
 		})
 	}
 
@@ -339,6 +346,23 @@ class OBSCommander {
 				return this.sendMessage(`Filter ${state ? "Enabled" :  "Disabled"}`);
 			}
 		})
+	}
+
+	cmdSetSourceVolume(msg) {
+		const sourceName = msg.Args[0];
+		var volume = msg.Args[1];
+		if (sourceName === undefined || volume === undefined || isNaN(volume)) {
+			return this.sendMessage("Usage: !setvolume <source_name> <volume>");
+		}
+		volume = parseFloat(volume);
+		this.obsCommand("SetInputVolume", { inputName: sourceName, inputVolumeDb: volume }, res => {
+			if (!res.Success) {
+				if (res.Error.message.includes("No source was found")) this.sendMessage("Source Not Found!");
+			}
+			if (res.Success && res.Data === undefined) {
+				return this.sendMessage(`Volume set to ${volume}`);
+			}
+		});
 	}
 }
 
