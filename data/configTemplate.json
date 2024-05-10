@@ -1,7 +1,7 @@
 {
 	"OBS": {
 		"Address": "ws://localhost:4455", 
-		"password": "OBS Websocket Password. Make sure you enable the websocket server."
+		"Password": "OBS Websocket Password. Make sure you enable the websocket server."
 	},
 
 	"Twitch": {
@@ -18,7 +18,7 @@
 		"Live_Scene": "Live",
 		"Preview_Source": "Screenshot Preview",
 		"Source_Names": [
-			"GFG RTMP Relay"
+			"Camera Source"
 		]
 	},
 	

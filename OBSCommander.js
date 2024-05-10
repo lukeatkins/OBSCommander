@@ -230,7 +230,8 @@ class OBSCommander {
 
 
 	takeScreenshot(msg) {
-		this.config.Screenshots.Source_Names.forEach(src => {
+		var screenshots = [];
+		async.each(this.config.Screenshots.Source_Names, (src, next) => {
 			this.obs.call("GetSourceScreenshot", {
 				"sourceName": src,
 				"imageFormat": this.imageFormat
@@ -238,17 +239,27 @@ class OBSCommander {
 				const base64Image = res.imageData.replace(/^data:image\/\w+;base64,/, '')
 				const buffer = Buffer.from(base64Image, "base64");
 
-				this.showScreenshotPreview(msg, buffer);
-				this.sendScreenshotToDiscord(msg, buffer);
+				screenshots.push({Source: src, Buffer: buffer});
+				next();
 				
 			}).catch(err => {
 				if (err.message.includes("Failed to render screenshot")) {
-					return console.log(`Screenshot Source [${src}] is offline`);
+					return next();
+					//return console.log(`Screenshot Source [${src}] is offline`);
 				}
-				return console.log("Failed to get Screenshot:", err);
+				console.log("Failed to get Screenshot:", err);
+				next();
 			})
-		})
-		
+		}, () => {
+			if (screenshots.length == 0) {
+				return console.log("No source is active");
+			}
+			screenshots.sort((a,b) => this.config.Screenshots.Source_Names.indexOf(a.Source) - this.config.Screenshots.Source_Names.indexOf(b.Source));
+			screenshots.forEach((screenshot, i) => {
+				this.sendScreenshotToDiscord(msg, screenshot.Buffer, i == 0);				
+			});
+			this.showScreenshotPreview(msg, screenshots[0].Buffer);			
+		});		
 	}
 
 	showScreenshotPreview(msg, buffer) {
@@ -281,7 +292,7 @@ class OBSCommander {
 		});
 	}
 
-	sendScreenshotToDiscord(msg, buffer) {
+	sendScreenshotToDiscord(msg, buffer, sendMsg = true) {
 		const text = `Screenshot from ${msg.Username}: ${msg.Args.join(" ")}`;
 				
 		request(this.config.Discord.Webhook, {
@@ -300,7 +311,8 @@ class OBSCommander {
 			}
 		})
 		.then(res => {
-			this.sendMessage(`${msg.Username}'s Screenshot saved to Discord!`);
+			if (sendMsg) this.sendMessage(`${msg.Username}'s Screenshot saved to Discord!`);
+			console.log(`${msg.Username}'s Screenshot saved to Discord!`);
 		})
 		.catch(err => {
 			console.log("Failed to post Screenshot to Discord");
